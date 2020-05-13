@@ -1,0 +1,32 @@
+{
+  "name": "gql-io",
+  "version": "1.0.0",
+  "description": "Minimalistic GraphQL client with io-ts deserialization in mind",
+  "main": "index.js",
+  "repository": "https://github.com/DamonOehlman/gql-io.git",
+  "author": "Damon Oehlman <damon.oehlman@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "bent": "^7.3.1",
+    "embellish-readme": "^1.5.2",
+    "fp-ts": "^2.6.0",
+    "graphql": "^15.0.0"
+  },
+  "devDependencies": {
+    "@types/bent": "^7.0.2",
+    "@types/tape": "^4.13.0",
+    "graphql-tag": "^2.10.3",
+    "io-ts": "^2.2.2",
+    "tape": "^5.0.0",
+    "typescript": "^3.9.2"
+  },
+  "peerDependencies": {
+    "io-ts": ">=2.2"
+  },
+  "scripts": {
+    "compile": "tsc",
+    "pretest": "tsc",
+    "test": "node lib/test/artsy.js",
+    "gendocs": "embellish README.md"
+  }
+}
