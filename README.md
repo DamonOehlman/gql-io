@@ -2,6 +2,8 @@
 
 OFFICIAL STATUS: Nothing to see here.
 
+[![Build Status](https://api.travis-ci.org/DamonOehlman/gql-io.svg?branch=master)](https://travis-ci.org/DamonOehlman/gql-io)
+
 ### For the super curious
 
 This is a personal PoC to see how light, but robust a GraphQL client can be.
