@@ -1,4 +1,4 @@
-import type { Decoder } from 'io-ts';
+import type { Decoder, Errors } from 'io-ts';
 import type { DocumentNode } from 'graphql';
 import bent, { Json } from 'bent';
 
@@ -27,6 +27,18 @@ type WrappedRequestOptions<O> = Omit<RequestOptions<O>, 'endpoint'>;
 interface RequestPayload {
   query: string;
   variables?: QueryVariables;
+}
+
+export class DeserializationError extends Error {
+  constructor(public readonly errors: Errors) {
+    super('Unable to deserialize graphql response');
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, DeserializationError);
+    }
+
+    this.name = 'DeserializationError';
+  }
 }
 
 export const createClient = (options: ClientOptions) => {
@@ -85,7 +97,7 @@ export const query = async <O>(options: RequestOptions<O>): Promise<O> => {
     return result.right;
   }
 
-  throw new Error(`Unable to deserialize graphql response`);
+  throw new DeserializationError(result.left);
 };
 
 export const mutate = <O>(options: RequestOptions<O>) => query(options);
