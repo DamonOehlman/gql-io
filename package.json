@@ -34,6 +34,7 @@
   },
   "scripts": {
     "compile": "tsc && rollup -c",
+    "pretest": "yarn compile",
     "test": "ts-node test/artsy.ts",
     "gendocs": "embellish README.md"
   }
