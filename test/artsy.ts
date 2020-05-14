@@ -2,6 +2,7 @@ import { query } from '../';
 import gql from 'graphql-tag';
 import * as t from 'io-ts';
 import tape from 'tape';
+import { print } from 'graphql';
 
 const COLLECTIONS_QUERY = gql`
 query collections {
@@ -50,6 +51,7 @@ tape('artsy graphql endpoints (DocumentNode query)', async test => {
       endpoint: 'https://metaphysics-production.artsy.net/',
       query: COLLECTIONS_QUERY,
       decoder: HubQueryResponse,
+      docToStr: print,
     });
 
     test.ok(response.marketingHubCollections.length >= 0, 'successfully retrieved a collection from artsy');

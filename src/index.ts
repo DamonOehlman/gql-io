@@ -1,19 +1,21 @@
-import { Decoder } from 'io-ts';
+import type { Decoder } from 'io-ts';
+import type { DocumentNode } from 'graphql';
 import bent, { Json } from 'bent';
-import { isRight } from 'fp-ts/lib/Either';
-import { DocumentNode, print } from 'graphql';
 
 type ClientHeaders = { [key: string]: string };
 type QueryVariables = { [key: string]: string | number | boolean | null };
 
-export interface ClientOptions {
+interface CoreOptions {
   endpoint: string;
+  docToStr?: (node: DocumentNode) => string;
+}
+
+export interface ClientOptions extends CoreOptions {
   defaultHeaders?: ClientHeaders;
 }
 
-interface RequestOptions<O> {
+interface RequestOptions<O> extends CoreOptions {
   query: DocumentNode | string;
-  endpoint: string;
   decoder: Decoder<Json, O>;
   variables?: QueryVariables;
   headers?: ClientHeaders;
@@ -28,10 +30,11 @@ interface RequestPayload {
 }
 
 export const createClient = (options: ClientOptions) => {
-  const { endpoint, defaultHeaders } = options;
+  const { endpoint, defaultHeaders, docToStr } = options;
 
   const createWrapper = <O>(handler: RequestHandler<O>) => (options: WrappedRequestOptions<O>) => handler({
     endpoint,
+    docToStr: options.docToStr || docToStr,
     query: options.query,
     decoder: options.decoder,
     variables: options.variables,
@@ -48,10 +51,22 @@ export const createClient = (options: ClientOptions) => {
 };
 
 export const query = async <O>(options: RequestOptions<O>): Promise<O> => {
-  const { endpoint, query } = options;
+  const { endpoint, query, docToStr } = options;
   const post = bent('POST', 'json', 200);
+
+  let queryText: string;
+  if (typeof query === 'string') {
+    queryText = query;
+  } else {
+    if (!docToStr) {
+      throw new Error('Have been provided a DocumentNode but no way to convert it, please provide the docToStr option');
+    }
+
+    queryText = docToStr(query);
+  }
+
   const body: RequestPayload = {
-    query: typeof query === 'string' ? query : print(query),
+    query: queryText,
   };
 
   // TODO: operation name
@@ -66,7 +81,7 @@ export const query = async <O>(options: RequestOptions<O>): Promise<O> => {
   // TODO: get bent to be more useful here, or actually deserialize the data from the response
   const data = (response as any).data;
   const result = options.decoder.decode(data);
-  if (isRight(result)) {
+  if (result._tag === 'Right') {
     return result.right;
   }
 
