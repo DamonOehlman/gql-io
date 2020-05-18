@@ -12,3 +12,6 @@ before_install:
 notifications:
   email:
     - damon.oehlman@gmail.com
+
+script:
+  - yarn test
