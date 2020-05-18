@@ -7,7 +7,7 @@ services:
 
 before_install:
   - docker pull apisguru/graphql-faker
-  - docker run -v=${PWD}:/workdir -p=9002:9002 apisguru/graphql-faker test/data/schema.sdl
+  - docker run -d -v=${PWD}:/workdir -p=9002:9002 apisguru/graphql-faker test/data/schema.sdl
 
 notifications:
   email:
