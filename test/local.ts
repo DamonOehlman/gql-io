@@ -4,19 +4,17 @@ import * as t from 'io-ts';
 import tape from 'tape';
 import { print } from 'graphql';
 
-const POSTS_QUERY = gql`
-query posts {
-  allPosts {
-    id
-    title
+const PEOPLE_QUERY = gql`
+query {
+  people {
+    name
   }
 }
 `;
 
-export const PostsResponse = t.type({
-  allPosts: t.array(t.type({
-    id: t.string,
-    title: t.string,
+export const PeopleResponse = t.type({
+  people: t.array(t.type({
+    name: t.string,
   })),
 });
 
@@ -27,12 +25,12 @@ export const runLocalTests = (endpoint: string) => {
     try {
       const response = await query({
         endpoint,
-        query: POSTS_QUERY,
+        query: PEOPLE_QUERY,
         docToStr: print,
-        decoder: PostsResponse,
+        decoder: PeopleResponse,
       });
 
-      test.ok(response.allPosts.length >= 0, 'successfully retrieved posts');
+      test.ok(response.people.length >= 0, 'successfully retrieved people');
     } catch (e) {
       test.fail(e);
     }

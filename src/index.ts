@@ -86,7 +86,6 @@ export const query = async <O>(options: RequestOptions<O>): Promise<O> => {
     body.variables = options.variables;
   }
 
-  console.log(`posting request to ${endpoint}`, body);
   const response = await post(endpoint, body, {
     'Content-Type': 'application/json'
   });

@@ -1,0 +1,7 @@
+type Person {
+  name: String @fake(type: firstName)
+}
+
+type Query {
+  people: [Person] @listLength(min: 1, max: 10)
+}
