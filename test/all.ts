@@ -1,33 +1,31 @@
 import { runArtsyTests } from './artsy';
-import express from 'express';
+import { runLocalTests } from './local';
 import type { Server } from 'http';
+import { ApolloServer, gql } from 'apollo-server';
+import { typeDefs } from './data/schema';
 
-// living life on the edge with no TS
-const JsonGraphqlServer = require('json-graphql-server').default;
+const PORT = 5050;
 
 async function main() {
-  const server = await startTestServer();
+  const { url, server } = await startTestServer();
+  console.log(`mock server running @ ${url}, starting tests`);
 
   try {
-    runArtsyTests();
+    runLocalTests(url);
+    // runArtsyTests();
   } finally {
-    server.close();
+    await server.close();
   }
 }
 
-function startTestServer() {
-  const app = express();
-  app.use('/', JsonGraphqlServer(require('./db.js')));
-
-  return new Promise<Server>((resolve, reject) => {
-    const server = app.listen(5050, (err) => {
-      if (err) {
-        return reject(err);
-      }
-
-      resolve(server);
-    });
+async function startTestServer() {
+  const server = new ApolloServer({
+    typeDefs,
+    mocks: true,
   });
+
+  return server.listen({ port: PORT });
 }
+
 main();
 
